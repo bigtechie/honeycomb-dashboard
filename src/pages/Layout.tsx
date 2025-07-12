@@ -2,6 +2,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "@/components/shared/Sidebar";
 import Breadcrumb from "@/components/shared/Breadcrumb";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -28,17 +29,20 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <header className="flex items-center justify-between p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <Breadcrumb />
-          <Button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            New Project
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              New Project
+            </Button>
+            <UserMenu />
+          </div>
         </header>
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto pb-20">
           <motion.div
             key={location.pathname}
             initial={{ opacity: 0, y: 20 }}

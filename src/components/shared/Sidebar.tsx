@@ -1,6 +1,7 @@
 
 import { NavLink } from "react-router-dom";
 import { Users, Swords, FolderKanban, Target, Award } from "lucide-react";
+import { WalletButton } from "@/components/wallet/WalletButton";
 
 const navLinks = [
   {
@@ -32,11 +33,11 @@ const navLinks = [
 
 export default function Sidebar() {
   return (
-    <aside className="w-64 bg-white dark:bg-gray-800 shadow-md">
+    <aside className="w-64 bg-white dark:bg-gray-800 shadow-md relative flex flex-col">
       <div className="p-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
       </div>
-      <nav className="mt-6">
+      <nav className="mt-6 flex-1">
         <ul>
           {navLinks.map((link) => (
             <li key={link.to}>
@@ -55,6 +56,11 @@ export default function Sidebar() {
           ))}
         </ul>
       </nav>
+      
+      {/* Wallet Connection Button - Fixed at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <WalletButton />
+      </div>
     </aside>
   );
 }
