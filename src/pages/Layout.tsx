@@ -10,15 +10,24 @@ import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useHoneycomb } from "@/hooks/useHoneycomb";
 
 export default function Layout() {
   const location = useLocation();
+  const { createProject } = useHoneycomb();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
 
   const handleSave = () => {
     // Handle save logic here
     console.log("Project name:", projectName);
+    createProject(projectName)
+      .then((projectAddress) => {
+        console.log("Project created at address:", projectAddress);
+      })
+      .catch((error) => {
+        console.error("Error creating project:", error);
+      });
     setProjectName("");
     setIsModalOpen(false);
   };

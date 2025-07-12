@@ -1,14 +1,15 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
-  BackpackWalletAdapter,
+  // BackpackWalletAdapter,
   TrustWalletAdapter,
   CoinbaseWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import { clusterApiUrl } from '@solana/web3.js';
+// import { clusterApiUrl } from '@solana/web3.js';
 
 // Import wallet adapter CSS
 import '@solana/wallet-adapter-react-ui/styles.css';
@@ -19,8 +20,10 @@ interface WalletContextProviderProps {
 
 export function WalletContextProvider({ children }: WalletContextProviderProps) {
   // You can use 'devnet', 'testnet', or 'mainnet-beta'
-  const network = 'mainnet-beta';
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  // const network = 'mainnet-beta';
+  // const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  const network = import.meta.env.VITE_HONEYCOMB_RPC_URL;
+  const endpoint = useMemo(() => network, [network]);
 
   // Configure supported wallets
   const wallets = useMemo(
