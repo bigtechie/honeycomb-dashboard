@@ -1,4 +1,3 @@
-
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "@/components/shared/Sidebar";
 import Breadcrumb from "@/components/shared/Breadcrumb";
@@ -11,25 +10,69 @@ import { Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useHoneycomb } from "@/hooks/useHoneycomb";
+import { projectsService } from "@/lib/database";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export default function Layout() {
   const location = useLocation();
   const { createProject } = useHoneycomb();
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
 
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Project name:", projectName);
-    createProject(projectName)
-      .then((projectAddress) => {
-        console.log("Project created at address:", projectAddress);
-      })
-      .catch((error) => {
-        console.error("Error creating project:", error);
-      });
-    setProjectName("");
-    setIsModalOpen(false);
+  const handleSave = async () => {
+    if (!projectName.trim()) {
+      toast.error("Please enter a project name");
+      return;
+    }
+
+    if (!user) {
+      toast.error("You must be logged in to create a project");
+      return;
+    }
+
+    setIsCreating(true);
+
+    try {
+      // Handle save logic here
+      console.log("Project name:", projectName);
+      
+      // Create project on blockchain
+      const projectAddress = await createProject(projectName.trim());
+      
+      if (!projectAddress) {
+        throw new Error("Failed to create project on blockchain");
+      }
+      
+      console.log("Project created at address:", projectAddress);
+      
+      // Save project to Supabase
+      const savedProject = await projectsService.createProject(
+        projectName.trim(),
+        projectAddress
+      );
+      
+      if (savedProject) {
+        toast.success(`Project "${projectName}" created successfully!`);
+        console.log("Project saved to database:", savedProject);
+      } else {
+        throw new Error("Failed to save project to database");
+      }
+      
+      setProjectName("");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error creating project:", error);
+      toast.error(
+        error instanceof Error 
+          ? error.message 
+          : "Failed to create project. Please try again."
+      );
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleCancel = () => {
@@ -89,8 +132,8 @@ export default function Layout() {
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>
-              Save
+            <Button onClick={handleSave} disabled={isCreating || !projectName.trim()}>
+              {isCreating ? "Creating..." : "Create Project"}
             </Button>
           </DialogFooter>
         </DialogContent>
